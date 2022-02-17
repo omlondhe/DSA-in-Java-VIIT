@@ -38,17 +38,24 @@ public class BinaryTree {
     }
 
     TreeNode delete(TreeNode root, int value) {
-        if (root == null) return root;
+        if (root == null) return null;
+        if (root.left == null && root.right == null) {
+            root = null;
+            return null;
+        }
 
-        if (value < root.value) root.left = delete(root.left, value);
+        if (value < root.value) root.left =  delete(root.left, value);
         else if (value > root.value) root.right = delete(root.right, value);
-
         else {
-            if (root.left == null) return root.right;  
-            if (root.right == null) return root.left;  
-
-            root.value = inOrderPreDecessor(root.right);
-            root.right = delete(root.right, root.value);
+            TreeNode node = inOrderPreDecessor(root);
+            if (node == null) {
+                node = inOrderPostSuccessor(root);
+                root.value = node.value;
+                root.right = delete(root.right, node.value);
+            } else {
+                root.value = node.value;
+                root.left = delete(root.left, node.value);
+            }
         }
 
         return root;
@@ -78,6 +85,10 @@ public class BinaryTree {
     }
 
     void show() {
+        if (root == null) {
+            System.err.println("Tree is empty");
+            return;
+        }
         System.out.println("Pre Order traversal: ");
         showBinaryTreeUsingPreOrderTraversal(root);
         System.out.println("\n------------------------");
@@ -89,22 +100,21 @@ public class BinaryTree {
         System.out.println("\n------------------------");
     }
 
-    int inOrderPreDecessor(TreeNode node) {
-        int minValue = root.value;
-        while (root.left != null) {
-            minValue = root.left.value;
-            root = root.left;
+    TreeNode inOrderPreDecessor(TreeNode node) {
+        node = node.left;
+        if (node == null) return null;
+        while (node.right != null) {
+            node = node.right;
         }
-        return minValue;
+        return node;
     }
-
-    int inOrderSuccessor(TreeNode node) {
-        int maxValue = root.value;
-        while(root.right != null) {
-            maxValue = root.right.value;
-            root = root.right;
+    TreeNode inOrderPostSuccessor(TreeNode node) {
+        node = node.right;
+        if (node == null) return null;
+        while (node.left != null) {
+            node = node.left;
         }
-        return maxValue;
+        return node;
     }
 
     TreeNode search(int value) {
@@ -126,17 +136,17 @@ public class BinaryTree {
         Scanner scanner = new Scanner(System.in);
         BinaryTree tree = new BinaryTree();
 
-        System.out.println("Current tree: ");
-        tree.show();
-        
         while (true) {
             System.out.println("What action you want to perform?");
-            System.out.println("0\tExit");
-            System.out.println("1\tInsert a node");
-            System.out.println("2\tDelete a node");
-            System.out.println("3\tSearch a node");
-            System.out.println("4\tShow full tree");
-
+            System.out.println("0.\tExit");
+            System.out.println("1.\tInsert a node");
+            System.out.println("2.\tDelete a node");
+            System.out.println("3.\tSearch a node");
+            System.out.println("4.\tGet In order pre-decessor");
+            System.out.println("5.\tGet In order post-successor");
+            System.out.println("6.\tShow full tree");
+            
+            System.out.print("Enter your choice:\t");
             int choice = scanner.nextInt();
 
             switch (choice) {
@@ -158,14 +168,41 @@ public class BinaryTree {
                     if (node == null) {
                         System.out.println("Node not found!");
                     } else {
+                        TreeNode treeNode;
                         System.out.println("Node is present");
-                        System.out.println("Its left element is " + node.left == null ? null : node.left.value);
-                        System.out.println("Its right element is " + node.right == null ? null : node.right.value);
-                        System.out.println("Its in order pre-decessor element is " + tree.inOrderPreDecessor(node));
-                        System.out.println("Its in order successor element is " + tree.inOrderSuccessor(node));
+                        String left = node.left == null ? "null" : String.valueOf(node.left.value);
+                        System.out.println("Left child             :\t" + left);
+                        String right = node.right == null ? "null" : String.valueOf(node.right.value);
+                        System.out.println("Right child            :\t" + right);
+                        treeNode = tree.inOrderPreDecessor(node);
+                        String inOrderPreDecessor = treeNode == null ? "null" : String.valueOf(treeNode.value);
+                        System.out.println("In Order Pre-decessor  :\t" + inOrderPreDecessor);
+                        treeNode = tree.inOrderPostSuccessor(node);
+                        String inOrderPostSuccessor = treeNode == null ? "null" : String.valueOf(treeNode.value);
+                        System.out.println("In Order Post-successor:\t" + inOrderPostSuccessor);
                     }
                     break;
-                case 4:
+                case 4: 
+                    System.out.print("Enter an element for which you want to find:\t");
+                    TreeNode treeNode1 = tree.search(scanner.nextInt());
+                    if (treeNode1 == null) System.out.println("Node not found!");
+                    else {
+                        treeNode1 = tree.inOrderPreDecessor(treeNode1);
+                        if (treeNode1 == null) System.out.println("Not found!");
+                        else System.out.println(treeNode1.value);
+                    }
+                    break;
+                    case 5:
+                    System.out.print("Enter an element for which you want to find:\t");
+                    TreeNode treeNode2 = tree.search(scanner.nextInt());
+                    if (treeNode2 == null) System.out.println("Node not found!");
+                    else {
+                        treeNode2 = tree.inOrderPostSuccessor(treeNode2);
+                        if (treeNode2 == null) System.out.println("Not found!");
+                        else System.out.println(treeNode2.value);
+                    }
+                    break;
+                case 6:
                     tree.show();
                     break;
             
@@ -177,3 +214,21 @@ public class BinaryTree {
     }
 
 }
+
+
+/*
+1
+5
+1
+3
+1
+7
+1
+6
+1
+8
+1
+4
+1
+2
+*/
