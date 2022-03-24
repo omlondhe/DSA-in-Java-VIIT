@@ -1,0 +1,94 @@
+import java.util.ArrayList;
+import java.util.Scanner;
+
+class Node {
+    private int value;
+    private int weight;
+
+    public Node(int value, int weight) {
+        this.value = value;
+        this.weight = weight;
+    }
+
+    public int getValue() {
+        return value;
+    }
+
+    public int getWeight() {
+        return weight;
+    }
+}
+
+public class Prims {
+    static void primsAlgorithm(ArrayList<ArrayList<Node>> graph, int N) {
+        int[] weight = new int[N];
+        int[] parent = new int[N];
+        boolean[] minimumSpanningTree = new boolean[N];
+        for (int i = 0; i < N; i++) {
+            weight[i] = Integer.MAX_VALUE;
+            parent[i] = -1;
+            minimumSpanningTree[i] = false;
+        }
+
+        weight[0] = 0;
+
+        for (int i = 0; i < N-1; i++) {
+            int min_weight = Integer.MAX_VALUE;
+            int closest_node_index = 0;
+            for (int j = 0; j < N; j++) {
+                if (!minimumSpanningTree[j] && weight[j] < min_weight) {
+                    min_weight = weight[j];
+                    closest_node_index = j;
+                }
+            }
+
+            minimumSpanningTree[closest_node_index] = true;
+
+            for (Node node: graph.get(closest_node_index)) {
+                if (!minimumSpanningTree[node.getValue()] && node.getWeight() < weight[node.getValue()]) {
+                    parent[node.getValue()] = closest_node_index;
+                    weight[node.getValue()] = node.getWeight();
+                }
+            }
+        }
+
+        for (int i = 1; i < N; i++) {
+            System.out.println(parent[i] + " - " + i);
+        }
+    }
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        ArrayList<ArrayList<Node>> graph = new ArrayList<ArrayList<Node>>();
+
+        System.out.println("How many nodes are there in your graph?");
+        int nodes = scanner.nextInt();
+
+        for (int i = 0; i < nodes; i++) graph.add(new ArrayList<Node>()); 
+
+        while (true) {
+            int from = nodes;
+            while (from < 0 || from > nodes - 1) {
+                System.out.print("Enter the index of node from which node you want to add? (0 - " + (nodes - 1) + "):\t");
+                from = scanner.nextInt();
+            }
+            int value = nodes;
+            while (value < 0 || value > nodes - 1) {
+                System.out.print("Enter the value of node (0 - " + (nodes - 1) + "):\t");
+                value = scanner.nextInt();
+            }
+            System.out.print("Enter the weight of edge:\t");
+            int weight = scanner.nextInt();
+            
+            graph.get(from).add(new Node(value, weight));
+            graph.get(value).add(new Node(from, weight));
+
+            System.out.println("Want to add next node? (1: yes / 0: no)");
+            if (scanner.nextInt() == 0) {
+                break;
+            }
+        }
+        scanner.close();
+        
+        primsAlgorithm(graph, nodes);
+    }
+}
