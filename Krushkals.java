@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Scanner;
 
@@ -51,6 +52,7 @@ public class Krushkals {
     }
 
     static void algorithm(ArrayList<Node> graph, int N) {
+        Collections.sort(graph, new SortComparator());
         int parent[] = new int[N];
         int rank[] = new int[N];    
 
