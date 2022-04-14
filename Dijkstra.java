@@ -15,7 +15,7 @@ class Node implements Comparator<Node> {
 
     @Override
     public int compare(Node node1, Node node2) {
-        return (node1.getWeight() < node2.getWeight()) ? -1 : (node1.getWeight() > node2.getWeight()) ? 1 : 0;
+        return (node1.weight < node2.weight) ? -1 : (node1.weight > node2.weight) ? 1 : 0;
     }
 }
 
@@ -32,7 +32,11 @@ public class Dijkstra {
             Node node = priorityQueue.poll();
             
             for (Node it: graph.get(node.getValue())) {
-                if (distance[node.getValue()] + it.getWeight() < distance[it.getValue()]) {
+                System.out.println(distance[node.getValue()]);
+                System.out.println(it.getWeight());
+                System.out.println(distance[it.getValue()]);
+                if ((distance[node.getValue()] + it.getWeight()) < distance[it.getValue()]) {
+                    System.out.println("...");
                     distance[it.getValue()] = distance[node.getValue()] + it.getWeight();
                     priorityQueue.add(new Node(it.getValue(), distance[it.getValue()]));
                 }
@@ -79,3 +83,31 @@ public class Dijkstra {
         algorithm(0, graph, length);
     }
 }
+
+/*
+6
+1
+2
+2
+1
+2
+5
+5
+1
+5
+3
+1
+1
+3
+2
+4
+1
+3
+4
+3
+1
+4
+1
+1
+0
+*/
